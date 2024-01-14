@@ -1,7 +1,6 @@
 package com.example.comp.dnd
 
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -58,7 +57,8 @@ fun <T> DragTarget(
     modifier: Modifier = Modifier,
     dataToDrop: T,
     viewModel: DraggableViewModel,
-    content: @Composable (() -> Unit)
+    dragVisual: @Composable (() -> Unit)? = null,
+    content: @Composable (() -> Unit),
 ) {
 
     var currentPosition by remember { mutableStateOf(Offset.Zero) }
@@ -70,13 +70,13 @@ fun <T> DragTarget(
                 Offset.Zero
             )
         }
-        .pointerInput(Unit) {
+        .pointerInput(dataToDrop) {
             detectDragGestures(onDragStart = {
                 viewModel.startDragging()
                 currentState.dataToDrop = dataToDrop
                 currentState.isDragging = true
                 currentState.dragPosition = currentPosition + it
-                currentState.draggableComposable = content
+                currentState.draggableComposable = dragVisual?:content
             }, onDrag = { change, dragAmount ->
                 change.consumeAllChanges()
                 currentState.dragOffset += Offset(dragAmount.x, dragAmount.y)
@@ -97,7 +97,7 @@ fun <T> DragTarget(
 @Composable
 fun <T> DropItem(
     modifier: Modifier = Modifier,
-    content: @Composable() (BoxScope.(isInBound: Boolean, data: T?) -> Unit)
+    content: @Composable (BoxScope.(isInBound: Boolean, data: T?) -> Unit)
 ) {
 
     val dragInfo = LocalDragTargetInfo.current
@@ -109,11 +109,10 @@ fun <T> DropItem(
 
     Box(modifier = modifier.onGloballyPositioned {
         it.boundsInWindow().let { rect ->
-            isCurrentDropTarget = dragInfo.isDragging && rect.contains(dragPosition + dragOffset)
+            isCurrentDropTarget = dragInfo.isDragging && rect.contains(dragPosition + dragOffset) //TODO figure out a way to make drops only work if they are visible?
         }
     }) {
-        val data =
-            if (isCurrentDropTarget && !dragInfo.isDragging) dragInfo.dataToDrop as T? else null
+        val data = if (isCurrentDropTarget && !dragInfo.isDragging) dragInfo.dataToDrop as T? else null
         content(isCurrentDropTarget, data)
     }
 }

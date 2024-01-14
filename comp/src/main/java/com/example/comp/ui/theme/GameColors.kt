@@ -8,8 +8,13 @@ val creamSocketBorderOuter = Color(0xFF695B48)
 val socketBackground = Color(0xFFDD984D)
 
 val tileBackground = Color(0xFFB36330)
+val disconnectedColor = Color(0xFFC5977A)
 val tileBorderInner = Color(0xFFA0663E)
 val tileBorderOuter = Color(0xFF5F3719)
+
+val labelColor = Color(0xFF2E2C2C)
+val dropColor = Color(0xFFFFFFFF)
+
 
 val shelfColor = Color(0xFFE0B263)
 val shelfShelf = Color(0xFF8F703C)

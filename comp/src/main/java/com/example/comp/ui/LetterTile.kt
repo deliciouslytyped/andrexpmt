@@ -11,6 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.comp.dnd.DragTarget
+import com.example.comp.model.LetterBoardSocketModel
 import com.example.comp.model.LetterSocketModel
 import com.example.comp.model.LetterTileModel
 import com.example.comp.ui.theme.game.*
@@ -25,9 +26,9 @@ fun LetterTile(modifier: Modifier = Modifier, model: LetterTileModel, draggable:
             dataToDrop = model,
             viewModel = model
             ) {
-            Content(model = model)
+            Content(modifier, model = model)
         }
-    } else { Content(model = model) }
+    } else { Content(modifier, model = model) }
 }
 
 @Composable
@@ -37,7 +38,11 @@ private fun Content(modifier: Modifier = Modifier, model: LetterTileModel) {
             .size(tileSize.dp)
             .border(3.dp, tileBorderInner)
             .border(1.dp, tileBorderOuter)
-            .background(tileBackground),
+            .background(
+                if(model._owner is LetterBoardSocketModel)
+                    (if(model.isConnected.value) tileBackground else disconnectedColor)
+                else tileBackground
+            ),
         contentAlignment = Alignment.Center
     ) {
         Text(
