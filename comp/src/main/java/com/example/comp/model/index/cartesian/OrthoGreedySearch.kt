@@ -40,10 +40,10 @@ fun longestExistingSubstring(s: String): Span? {
         //log("${s.substring(i)}")
         //log("${WordTrie.contains(s.substring(i))}")
         for ((j,c) in s.substring(i).withIndex()) {
-            logger.info("$c")
+            //logger.info("$c")
             //log("${cursor.valid}")
             cursor[c] //TODO make sure we arent off by one on the depth on this
-            logger.info(" ${cursor.valid}")
+            logger.info { "$c ${cursor.valid}" }
             //Not sure what I was thinking here but this whole thing is a mess
             if (!cursor.valid && c != '.') { // If we cant pac-man any more characters, check if we can find a terminator and then we've found the longest match for this starter, otherwise we wont find any more for this starter
                                             //i.e. if we cant consume the current character (And the cursor thus didnt step down the tree),
@@ -82,6 +82,6 @@ fun findLongestWords(spans: Map<Coord, OrientedSpan>): Map<Coord, OrientedSpan> 
             }
         }
     }
-    logger.info(res.map { (k,v) -> "$k -> $v, " }.joinToString())
+    logger.info { res.map { (k,v) -> "$k -> $v, " }.joinToString() }
     return res
 }

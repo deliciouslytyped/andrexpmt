@@ -15,8 +15,7 @@ import com.example.comp.ui.menus.HomeAnimationArea
 import com.example.comp.ui.menus.Navigation
 import com.example.comp.ui.theme.MyApplicationTheme
 import com.example.comp.ui.util.logging.LogViewer
-import com.example.comp.ui.util.logging.LogModel
-import com.example.comp.ui.util.logging.logEff
+import com.example.comp.ui.util.logging.LogAsEffect
 
 @Preview
 @Composable
@@ -125,9 +124,9 @@ fun GameOverPreview(){
 @Composable
 fun VLoggerPreview() { //TODO handle lazy column
     LogViewer {
-        LogModel.limit = 5
+        //VLogModel.limit = 5
         (0..20).plus(listOf(20,20,20)).forEach {
-            logEff("$it")
+            LogAsEffect("$it")
         }
     }
 }
@@ -170,9 +169,9 @@ fun MainPreview() {
 @Preview
 @Composable
 fun PreviewRC() {
-    LogModel.limit = 80
+    //VLogModel.limit = 80
     LogViewer {
-        logEff("${longestExistingBidirectionalSubstring("CAT")}")
+        LogAsEffect("${longestExistingBidirectionalSubstring("CAT")}")
     }
 }
 

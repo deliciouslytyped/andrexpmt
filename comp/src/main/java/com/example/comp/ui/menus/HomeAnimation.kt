@@ -93,7 +93,7 @@ class TileAnimationObject(val index: Int, val gridSize: Int, val screenHeight: F
 
 @Composable
 fun HomeAnimationArea() {
-    val dummyOwner = remember { DummyOwner() }
+    val dummyOwner = remember { DummyOwner<LetterTileModel>() }
     //TODO particle source?
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenHeight = with(LocalDensity.current) { maxHeight.toPx() }
