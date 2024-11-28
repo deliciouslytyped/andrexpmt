@@ -1,10 +1,10 @@
-package com.example.comp.model
+package com.example.comp.model.game
 
 import androidx.compose.runtime.mutableStateListOf
 import com.example.comp.dnd.DraggableViewModel
-import com.example.comp.model.index.Distribution.sampleLetter
+import com.example.comp.model.owner.Owner
 
-class IncomingStack : TileOwner,DraggableViewModel() {
+class IncomingStack : Owner<LetterTileModel>,DraggableViewModel() {
     val incomingTiles = mutableStateListOf<LetterTileModel>()
     fun addTile(l : LetterTileModel){
         incomingTiles.add(l)
@@ -30,7 +30,7 @@ class IncomingStack : TileOwner,DraggableViewModel() {
         addTile(stack.pop(n))
     }*/
 
-    override fun move(newOwner: TileOwner, tileModel: LetterTileModel) {
+    override fun move(newOwner: Owner<LetterTileModel>, tileModel: LetterTileModel) {
         incomingTiles.remove(incomingTiles.find { e -> e == tileModel}) //TODO?
         newOwner.accept(tileModel)
         //TODO so there is *some* game to it

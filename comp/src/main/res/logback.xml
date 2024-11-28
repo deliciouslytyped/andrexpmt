@@ -1,0 +1,14 @@
+<!--TODO I have no idea how to use this, sonnet helped with the xsd-->
+<configuration
+        xmlns="https://tony19.github.io/logback-android/xml"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://tony19.github.io/logback-android/xml https://cdn.jsdelivr.net/gh/tony19/logback-android/logback.xsd"
+>
+    <appender name="logcat" class="ch.qos.logback.classic.android.LogcatAppender" />
+    <appender name="visual" class="com.example.comp.ui.util.logging.VisualLoggerAdapter" />
+
+    <root level="DEBUG">
+        <appender-ref ref="logcat" />
+        <appender-ref ref="visual" />
+    </root>
+</configuration>

@@ -1,10 +1,11 @@
-package com.example.comp.model
+package com.example.comp.model.game
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import com.example.comp.model.owner.Owner
 
 // Shelf of playable pieces
-class TileShelfModel(val maxTiles : Int = 5) : TileOwner, ViewModel() {
+class TileShelfModel(val maxTiles : Int = 5) : Owner<LetterTileModel>, ViewModel() {
     var tiles = mutableStateListOf<LetterTileModel>()
 
     @Deprecated("use move instead")
@@ -20,7 +21,7 @@ class TileShelfModel(val maxTiles : Int = 5) : TileOwner, ViewModel() {
     }*/
 
     //TODO include give() in these or use = in parent? any way to enforce not accidentlly dropping a tile? (pass a lda?)
-    override fun move(newOwner: TileOwner, tileModel: LetterTileModel) {
+    override fun move(newOwner: Owner<LetterTileModel>, tileModel: LetterTileModel) {
         tiles.remove(tiles.find { e -> e == tileModel}) //TODO?
         newOwner.accept(tileModel)
     }

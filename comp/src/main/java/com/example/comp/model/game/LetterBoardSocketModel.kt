@@ -1,13 +1,10 @@
-package com.example.comp.model
+package com.example.comp.model.game
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
-import com.example.comp.model.index.cartesian.findLongestWords
+import com.example.comp.model.owner.Owner
 
 // Game board spaces that can hold a tile
-class LetterBoardSocketModel(val gm: GameBoardModel) : TileOwner, LetterSocketModel() {
+class LetterBoardSocketModel(val gm: GameBoardModel) : Owner, LetterSocketModel() {
     // burned tiles become inaccessible (game rules)
     var burned = mutableStateOf(false)
     override fun accept(tileModel: LetterTileModel) {

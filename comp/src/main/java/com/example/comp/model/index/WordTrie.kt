@@ -1,15 +1,8 @@
 package com.example.comp.model.index
 
 import android.content.Context
-import android.icu.text.Transliterator.Position
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.comp.R
-import com.example.comp.ui.util.VLogger
-import com.example.comp.ui.util.VisualLogger.log
-import com.example.comp.ui.util.readTextFileFromResource
+import com.example.comp.util.readTextFileFromResource
 import kotlin.math.max
 
 //TODO this is more for fun than efficiency, probably faster to just search the wordlist?
@@ -85,14 +78,5 @@ class TrieCursor(
             valid = false
         }
         return this
-    }
-}
-
-@Preview
-@Composable
-fun WordListPreview() {
-    VLogger {
-        val ctx = LocalContext.current
-        val wl = remember { WordTrie.apply { this.loadDictionary(ctx) } }
     }
 }

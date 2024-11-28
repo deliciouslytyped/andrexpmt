@@ -1,4 +1,4 @@
-package com.example.comp.ui
+package com.example.comp.ui.game
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,16 +11,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.comp.dnd.DraggableScreen
-import com.example.comp.model.GameBoardModel
-import com.example.comp.model.IncomingStack
-import com.example.comp.model.LetterTileModel
-import com.example.comp.model.TileShelfModel
+import com.example.comp.model.game.GameBoardModel
+import com.example.comp.model.game.IncomingStack
+import com.example.comp.model.game.LetterTileModel
+import com.example.comp.model.game.TileShelfModel
 import com.example.comp.model.index.Distribution.sampleLetter
-import com.example.comp.presentation.GameBoard
-import com.example.comp.presentation.TileShelfSet
-import com.example.comp.ui.util.LocalVisualLogger
 
 //TODO intellij wont move this file for some reason
 //TODO on screen debug log
@@ -32,7 +28,7 @@ fun DraggablePlayArea() {
     val model1 by remember { mutableStateOf(TileShelfModel()) }
     val model2 by remember { mutableStateOf(TileShelfModel()) }
     val model3 by remember { mutableStateOf(TileShelfModel()) }
-    val logger = LocalVisualLogger.current
+    //val logger = LocalVisualLogger.current
     //init game
     LaunchedEffect(null) {
         initNewGame(boardModel, stackModel, model1, model2, model3)
@@ -98,18 +94,6 @@ fun initNewGame(
     boardModel.addStartingTiles()
 }
 
-@Preview
-@Composable
-fun GameOverPreview(){
-    val stackModel = remember { IncomingStack() }
-    val boardModel by remember { mutableStateOf(GameBoardModel(stack = stackModel)) }
-    val model1 by remember { mutableStateOf(TileShelfModel()) }
-    val model2 by remember { mutableStateOf(TileShelfModel()) }
-    val model3 by remember { mutableStateOf(TileShelfModel()) }
-    GameOverOverlay(boardModel = boardModel, stackModel = stackModel, model1 = model1, model2 = model2, model3 = model3) {
-
-    }
-}
 
 @Composable
 fun GameOverOverlay(boardModel: GameBoardModel, stackModel: IncomingStack, model1: TileShelfModel, model2: TileShelfModel, model3: TileShelfModel, content: @Composable (() -> Unit)) {

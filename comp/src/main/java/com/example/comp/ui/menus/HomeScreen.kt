@@ -1,4 +1,4 @@
-package com.example.comp.ui
+package com.example.comp.ui.menus
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

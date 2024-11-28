@@ -1,25 +1,23 @@
-package com.example.comp.ui.util
+package com.example.comp.ui.util.logging
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+
+//TODO covnert to mvc?
 
 //TODO do something so this isnt so limited to the compose code
 
-val LocalVisualLogger = compositionLocalOf<VisualLogger> {
+val LocalVisualLogger = compositionLocalOf<LogModel> {
     error("No VisualLogger provided")
 }
 
-object VisualLogger {
+object LogModel {
     val logs = mutableStateListOf<String>()
     var limit = 20
 
@@ -61,13 +59,13 @@ object VisualLogger {
 fun logEff(s: String, key: Any? = null){
     val logger = LocalVisualLogger.current
     LaunchedEffect(key) {
-        logger.log(s)
+        LogModel.log(s)
     }
 }
 
 @Composable
-fun VLogger(content : @Composable (() -> Unit)){
-    val visualLogger = remember { VisualLogger }
+fun LogViewer(content : @Composable (() -> Unit)){
+    val visualLogger = remember { LogModel }
     var showLog by remember { mutableStateOf(false) }
     CompositionLocalProvider(LocalVisualLogger provides visualLogger) {
         content()
@@ -77,7 +75,7 @@ fun VLogger(content : @Composable (() -> Unit)){
     //TODO doesnt seem to help with the mouse interception issue after all
     if(showLog) {
         LazyColumn(modifier = Modifier) {
-            visualLogger.logs.forEach { log ->
+            LogModel.logs.forEach { log ->
                 item { Text(text = log) }
             }
         }
@@ -95,13 +93,33 @@ fun VLogger(content : @Composable (() -> Unit)){
     }
 }
 
-@Preview
-@Composable
-fun VLoggerPreview() { //TODO handle lazy column
-    VLogger {
-        VisualLogger.limit = 5
-        (0..20).plus(listOf(20,20,20)).forEach {
-            logEff("$it")
+
+/*
+class LogViewModel {
+    private val history = VisualLoggerAdapter.getHistory()
+
+    private val _logs = mutableStateOf<List<LogEntry>>(emptyList())
+    val logs: State<List<LogEntry>> = _logs
+
+    init {
+        // Load initial history
+        _logs.value = history.getAllLogs()
+
+        // Observe updates
+        viewModelScope.launch {
+            history.observeLogs().collect { entry ->
+                _logs.value = _logs.value + entry
+            }
         }
     }
 }
+
+@Composable
+fun LogViewer(viewModel: LogViewModel) {
+    LazyColumn {
+        items(viewModel.logs.value) { entry ->
+            LogEntryItem(entry)
+        }
+    }
+}
+ */

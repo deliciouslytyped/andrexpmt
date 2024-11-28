@@ -1,4 +1,4 @@
-package com.example.comp.presentation
+package com.example.comp.ui.game
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -7,13 +7,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.comp.dnd.DragTarget
-import com.example.comp.model.LetterBoardSocketModel
-import com.example.comp.model.LetterSocketModel
-import com.example.comp.model.LetterTileModel
+import com.example.comp.model.game.LetterBoardSocketModel
+import com.example.comp.model.game.LetterTileModel
 import com.example.comp.ui.theme.game.*
 
 val tileSize = 50
@@ -49,11 +47,4 @@ private fun Content(modifier: Modifier = Modifier, model: LetterTileModel) {
             text = model.label,
             fontSize = 30.sp)
     }
-}
-
-@Preview
-@Composable
-fun LetterTilePreview(){
-    val owner = LetterSocketModel()
-    LetterTile(model = LetterTileModel("A", owner = owner))
 }

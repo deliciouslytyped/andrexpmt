@@ -1,4 +1,4 @@
-package com.example.comp.presentation
+package com.example.comp.ui.game
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,13 +12,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.comp.dnd.DropItem
-import com.example.comp.model.LetterBoardSocketModel
-import com.example.comp.model.LetterSocketModel
-import com.example.comp.model.LetterTileModel
+import com.example.comp.model.game.LetterBoardSocketModel
+import com.example.comp.model.game.LetterSocketModel
+import com.example.comp.model.game.LetterTileModel
 import com.example.comp.ui.theme.game.*
 
 //TODO visuals similar to tile, create common TileLike?
@@ -73,28 +72,4 @@ fun LetterBoardSocket(modifier: Modifier = Modifier, model: LetterBoardSocketMod
         LetterSocket(modifier, model, dropEnabled = !model.burned.value)
         Box(modifier = Modifier.background(Color(0x95FF5900)))
     }
-}
-
-@Preview
-@Composable
-fun LetterSocketPreviewEmpty() {
-    val model = LetterSocketModel()
-    LetterSocket(model = model)
-}
-
-@Preview
-@Composable
-fun LetterSocketPreviewWithLabel() {
-    val model = LetterSocketModel()
-    model.label = "+1"
-    LetterSocket(model = model)
-}
-
-@Preview
-@Composable
-fun LetterSocketPreviewWithTile() {
-    val model = LetterSocketModel()
-    model.label = "+1"
-    model.tile = LetterTileModel("A", owner = model)
-    LetterSocket(model = model)
 }

@@ -1,25 +1,20 @@
-package com.example.comp.presentation
+package com.example.comp.ui.game
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.comp.model.GameBoardModel
-import com.example.comp.model.IncomingStack
-import com.example.comp.ui.util.VLogger
-import com.example.comp.ui.util.VisualLogger.log
+import com.example.comp.model.game.GameBoardModel
+import io.github.oshai.kotlinlogging.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
 
 // Prevew is in DraggablePlayArea
 @Composable
@@ -68,7 +63,7 @@ fun FoundWordOverlay(gridState : LazyGridState, model: GameBoardModel){
         ) {
 
             //TODO doc says using gridstate.layout can lead to infinite recomposition so currently hacking in a hardcoded value
-            model.getWordsInRange(start, start+9).apply { log("${this.size}rs ") }.forEach {
+            model.getWordsInRange(start, start+9).apply { logger.info("${this.size}rs ") }.forEach {
                 drawRect(Color(0x55992222),
                     size = Size(it.right * tileSizePx, it.bottom * tileSizePx),
                     topLeft = Offset(xOffset + (it.left - start) * tileSizePx, it.top * tileSizePx))
@@ -82,21 +77,3 @@ fun FoundWordOverlay(gridState : LazyGridState, model: GameBoardModel){
     }
 }
 
-@Preview
-@Composable
-fun PreviewGameBoard(){
-    VLogger {
-        Box {
-            val boardModel by remember { mutableStateOf(GameBoardModel(stack = IncomingStack()).apply {
-                repeat(20) {
-                    this.addRow()
-                }
-                this.foundWords.value.add(Rect(0f, 0f, 2f, 2f), "test1")
-                this.foundWords.value.add(Rect(3f, 3f, 1f, 1f), "test2")
-                burnFrontier.value = 2
-            }) }
-            GameBoard(model = boardModel)
-        }
-    }
-
-}

@@ -1,19 +1,20 @@
-package com.example.comp.model
+package com.example.comp.model.game
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.example.comp.model.owner.Owner
 
 // Game board spaces that can hold a tile
-open class LetterSocketModel : ViewModel(), TileOwner {
+open class LetterSocketModel : ViewModel(), Owner {
     var tile by mutableStateOf<LetterTileModel?>(null)
     var label by mutableStateOf<String?>(null)
     override fun canAccept(t: LetterTileModel): Boolean {
         return tile == null
     }
 
-    override fun move(newOwner: TileOwner, tileModel: LetterTileModel) {
+    override fun move(newOwner: Owner, tileModel: LetterTileModel) {
         TODO("Not yet implemented") //TODO shouldnt be impemented
     }
 

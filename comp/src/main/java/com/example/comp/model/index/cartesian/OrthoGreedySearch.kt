@@ -5,11 +5,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.comp.model.Coord
 import com.example.comp.model.index.TrieCursor
 import com.example.comp.model.index.WordTrie
-import com.example.comp.ui.util.VLogger
-import com.example.comp.ui.util.VisualLogger
-import com.example.comp.ui.util.VisualLogger.log
-import com.example.comp.ui.util.VisualLogger.logAppend
-import com.example.comp.ui.util.logEff
+import io.github.oshai.kotlinlogging.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
 
 //TODO in case of a string readable in both directions, make noteof that somehow for better scoring
 fun longestExistingBidirectionalSubstring(s: String): Span? {
@@ -42,10 +40,10 @@ fun longestExistingSubstring(s: String): Span? {
         //log("${s.substring(i)}")
         //log("${WordTrie.contains(s.substring(i))}")
         for ((j,c) in s.substring(i).withIndex()) {
-            logAppend("$c")
+            logger.info("$c")
             //log("${cursor.valid}")
             cursor[c] //TODO make sure we arent off by one on the depth on this
-            logAppend(" ${cursor.valid}")
+            logger.info(" ${cursor.valid}")
             //Not sure what I was thinking here but this whole thing is a mess
             if (!cursor.valid && c != '.') { // If we cant pac-man any more characters, check if we can find a terminator and then we've found the longest match for this starter, otherwise we wont find any more for this starter
                                             //i.e. if we cant consume the current character (And the cursor thus didnt step down the tree),
@@ -84,15 +82,6 @@ fun findLongestWords(spans: Map<Coord, OrientedSpan>): Map<Coord, OrientedSpan> 
             }
         }
     }
-    log(res.map { (k,v) -> "$k -> $v, " }.joinToString())
+    logger.info(res.map { (k,v) -> "$k -> $v, " }.joinToString())
     return res
-}
-
-@Preview
-@Composable
-fun PreviewRC() {
-    VisualLogger.limit = 80
-    VLogger {
-        logEff("${longestExistingBidirectionalSubstring("CAT")}")
-    }
 }

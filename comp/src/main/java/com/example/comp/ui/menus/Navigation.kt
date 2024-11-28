@@ -1,11 +1,11 @@
-package com.example.comp.ui
+package com.example.comp.ui.menus
 
 import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.comp.ui.game.DraggablePlayArea
 
 @Composable
 fun Navigation(){

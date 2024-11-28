@@ -1,4 +1,4 @@
-package com.example.comp.ui
+package com.example.comp.ui.menus
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -11,15 +11,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import com.example.comp.model.DummyOwner
-import com.example.comp.model.LetterTileModel
-import com.example.comp.model.index.Distribution
+import com.example.comp.model.owner.DummyOwner
+import com.example.comp.model.game.LetterTileModel
 import com.example.comp.model.index.oldSampleLetter
-import com.example.comp.presentation.LetterTile
-import com.example.comp.presentation.tileSize
+import com.example.comp.ui.game.LetterTile
+import com.example.comp.ui.game.tileSize
 import kotlinx.coroutines.*
 import java.util.*
 import kotlin.math.absoluteValue
@@ -120,8 +118,3 @@ fun HomeAnimationArea() {
     }
 }
 
-@Preview
-@Composable
-fun HomeAnimationAreaPreview(){
-    HomeAnimationArea()
-}

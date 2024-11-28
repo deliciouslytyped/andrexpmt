@@ -1,4 +1,4 @@
-package com.example.comp.ui.util
+package com.example.comp.util
 
 import android.content.Context
 

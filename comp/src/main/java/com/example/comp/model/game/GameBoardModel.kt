@@ -1,8 +1,10 @@
-package com.example.comp.model
+package com.example.comp.model.game
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Rect
 import androidx.lifecycle.ViewModel
+import com.example.comp.model.Coord
+import com.example.comp.model.LazyGridView
 import com.example.comp.model.index.Distribution.sampleLetter
 import com.example.comp.model.index.WordTrie
 import com.example.comp.model.index.cartesian.OrientedSpan
