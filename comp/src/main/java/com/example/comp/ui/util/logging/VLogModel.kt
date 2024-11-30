@@ -16,13 +16,10 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 
 //TODO rename file
-
 //TODO consider using existing Compose logging libraries.
-
 //TODO convert to mvc?
-
+//TODO mvc architecture a mess
 //TODO do something so this isnt so limited to the compose code
-
 //TODO code should be pretty strict about MVC, model stuff should be platform independent.
 
 val LocalLogger = compositionLocalOf<LogModel> {
@@ -36,6 +33,7 @@ fun LogAsEffect(s: String, key: Any? = null){
     }
 }
 
+//TODO scroll with two fingers, one finger should fall through to underlying elements
 //TODO incorporate the sonnet suggestions about structures for this
 @Composable
 fun LogViewer(content : @Composable (() -> Unit)){
@@ -113,14 +111,3 @@ class LogController(private val model: LogModel) { //TODO?
         model.clear() //TODO do I even need to explicitly do this?
     }
 }
-
-/*
-@Composable
-fun LogViewer(viewModel: LogViewModel) {
-    LazyColumn {
-        items(viewModel.logs.value) { entry ->
-            LogEntryItem(entry)
-        }
-    }
-}
-*/
