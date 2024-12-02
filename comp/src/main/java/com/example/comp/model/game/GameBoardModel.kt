@@ -17,7 +17,7 @@ import kotlin.math.absoluteValue
 //TODO word finding logic needs to be rewritten
 //TODO handle stacks
 //cols is the size orthogonal to the long axis
-class GameBoardModel(val cols: Int = 8, val stack: IncomingStack) : ViewModel() {
+class GameBoardModel(val cols: Int = 8, val stack: IncomingStack) {
     var sockets = mutableStateListOf<LetterBoardSocketModel>()
     val gv = LazyGridView(sockets, cols) //TODO mutablestate? shouldnt need it because its derived from one?
 

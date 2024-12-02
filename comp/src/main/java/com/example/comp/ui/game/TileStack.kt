@@ -16,7 +16,7 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.comp.dnd.DragTarget
+import com.example.comp.dnd.DraggableComposable
 import com.example.comp.model.game.IncomingStack
 import com.example.comp.ui.theme.game.tileBackground
 import com.example.comp.ui.theme.game.tileBorderInner
@@ -29,7 +29,7 @@ fun DraggableTileStack(stackModel: IncomingStack){
     val topTile = stackModel.incomingTiles.lastOrNull() // TODO remember?
     Box {
         if(topTile != null){
-            DragTarget(dataToDrop = topTile, viewModel = stackModel, dragVisual = {
+            DraggableComposable(dataToDrop = topTile, model = stackModel, dragVisual = {
                 LetterTile(model = topTile)
             }) {
                 TileStack(stackModel = stackModel)

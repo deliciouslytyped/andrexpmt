@@ -2,6 +2,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android") // https://developer.android.com/training/dependency-injection/hilt-android
 }
 
 android {
@@ -67,6 +69,8 @@ dependencies {
     implementation("io.github.oshai:kotlin-logging-jvm:7.0.0")
     implementation("org.slf4j:slf4j-api:2.0.16")
     implementation("com.github.tony19:logback-android:3.0.0") // git readme specifies slf4j-api 2.0.7 but we'll see //TODO see other info there about test setup
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -74,4 +78,8 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+}
+
+kapt {
+    correctErrorTypes = true
 }

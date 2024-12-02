@@ -4,21 +4,29 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.comp.model.owner.Owner
+import com.example.comp.model.game.concept.owner.Ownable
+import com.example.comp.model.game.concept.owner.Owner
 
 // Game board spaces that can hold a tile
 open class LetterSocketModel : ViewModel(), Owner<LetterTileModel> {
     var tile by mutableStateOf<LetterTileModel?>(null)
     var label by mutableStateOf<String?>(null)
-    override fun canAccept(t: LetterTileModel): Boolean {
+    override fun canAccept(t: Ownable<LetterTileModel>): Boolean {
         return tile == null
     }
 
-    override fun move(newOwner: Owner<LetterTileModel>, tileModel: LetterTileModel) { //TODO make alias type for this owner type?
-        TODO("Not yet implemented") //TODO shouldnt be impemented
+    override fun accept(tileModel: Ownable<LetterTileModel>): Boolean {
+        tile = tileModel.self()
+        return true //TODO actually check
     }
 
-    override fun accept(tileModel: LetterTileModel) {
-        tile = tileModel
+    override fun canRelease(ownable: Ownable<LetterTileModel>): Boolean {
+        return tile == ownable.self() //TODO is this correct?  / tile != null? / should throw some exceptions sanity checks
+    }
+
+    override fun release(tileModel: Ownable<LetterTileModel>): Boolean {
+        assert(tileModel == tile)
+        tile = null
+        return true
     }
 }

@@ -13,7 +13,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import com.example.comp.model.owner.DummyOwner
+import com.example.comp.model.game.concept.owner.DummyOwner
 import com.example.comp.model.game.LetterTileModel
 import com.example.comp.model.index.oldSampleLetter
 import com.example.comp.ui.game.LetterTile

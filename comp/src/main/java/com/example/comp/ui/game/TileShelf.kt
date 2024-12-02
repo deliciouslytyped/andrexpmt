@@ -4,12 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.comp.dnd.DropItem
+import com.example.comp.dnd.DropTarget
 import com.example.comp.model.game.LetterTileModel
 import com.example.comp.model.game.TileShelfModel
-import com.example.comp.ui.theme.game.shelfColor
-import com.example.comp.ui.theme.game.shelfShelf
+import com.example.comp.ui.theme.game.*
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 
@@ -17,13 +18,18 @@ private val shelfShelfSize = 10
 
 @Composable
 fun TileShelf(modifier: Modifier = Modifier, model: TileShelfModel) {
-    DropItem<LetterTileModel> { isCurrentDropTarget, tileModel ->
+    val logger = KotlinLogging.logger {}
+    DropTarget<LetterTileModel> { isHover, tileModel -> //TODO probably wrong?
         if (tileModel != null){ //TODO shelf limit
-            LaunchedEffect(key1 = isCurrentDropTarget, key2 = tileModel) {
+            LaunchedEffect(key1=isHover, key2 = tileModel) {
+                logger.debug { "launched shelf move ${isHover} ${tileModel} ${model}" }
                 tileModel.move(model) //TODO figure out how to IOC this or something
             }
         }
-        Box {
+        Box (modifier = Modifier.background(
+            if (isHover) Color.Red // TODO debug
+            else Color.Blue)
+        ) {
             Column(
                 modifier = modifier
                     .width(((model.maxTiles + 3) * tileSize).dp)

@@ -14,27 +14,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.comp.dnd.DropItem
+import com.example.comp.dnd.DropTarget
 import com.example.comp.model.game.LetterBoardSocketModel
 import com.example.comp.model.game.LetterSocketModel
 import com.example.comp.model.game.LetterTileModel
 import com.example.comp.ui.theme.game.*
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 //TODO visuals similar to tile, create common TileLike?
 @Composable
 fun LetterSocket(modifier: Modifier = Modifier, model: LetterSocketModel, dropEnabled: Boolean = true) {
-    DropItem<LetterTileModel> { isCurrentDropTarget, tile ->
+    val logger = KotlinLogging.logger {}
+    DropTarget<LetterTileModel> { isHover, tile ->
         if ( tile != null && model.tile == null && dropEnabled){
-            LaunchedEffect(key1 = isCurrentDropTarget, key2 = tile) {
-                tile.move(model) //TODO figure out how to IOC this or something
+            LaunchedEffect(key1=isHover, key2 = tile) { //TODO what's correct
+                logger.debug { "launched move ${isHover} ${tile} ${model}" }
+                tile.move(model) //TODO figure out how to IOC this or something //TODO isnt this vulnerable to races?
             }
         }
-        SocketContent(modifier, model, isCurrentDropTarget, dropEnabled)
+        SocketContent(modifier, model, isHover, dropEnabled)
     }
 }
 
 @Composable
-fun SocketContent(modifier: Modifier = Modifier, model: LetterSocketModel, isCurrentDropTarget : Boolean, dropEnabled: Boolean){
+fun SocketContent(modifier: Modifier = Modifier, model: LetterSocketModel, isHover : Boolean, dropEnabled: Boolean){
     Box(
         modifier
             .width(50.dp)
@@ -43,7 +46,7 @@ fun SocketContent(modifier: Modifier = Modifier, model: LetterSocketModel, isCur
             .border(3.dp, creamSocketBorderInner)
             .border(2.dp, creamSocketBorderOuter)
             .background(
-                if (isCurrentDropTarget && dropEnabled)
+                if (isHover && dropEnabled)
                     dropColor
                 else (if (model.label != null) labelColor
                     else socketBackground)

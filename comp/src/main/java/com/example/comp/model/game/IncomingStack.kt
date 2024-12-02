@@ -1,10 +1,11 @@
 package com.example.comp.model.game
 
 import androidx.compose.runtime.mutableStateListOf
-import com.example.comp.dnd.DraggableViewModel
-import com.example.comp.model.owner.Owner
+import com.example.comp.dnd.DraggableModel
+import com.example.comp.model.game.concept.owner.Ownable
+import com.example.comp.model.game.concept.owner.Owner
 
-class IncomingStack : Owner<LetterTileModel>,DraggableViewModel() {
+class IncomingStack : Owner<LetterTileModel>,DraggableModel() {
     val incomingTiles = mutableStateListOf<LetterTileModel>()
     fun addTile(l : LetterTileModel){
         incomingTiles.add(l)
@@ -30,19 +31,22 @@ class IncomingStack : Owner<LetterTileModel>,DraggableViewModel() {
         addTile(stack.pop(n))
     }*/
 
-    override fun move(newOwner: Owner<LetterTileModel>, tileModel: LetterTileModel) {
-        incomingTiles.remove(incomingTiles.find { e -> e == tileModel}) //TODO?
-        newOwner.accept(tileModel)
-        //TODO so there is *some* game to it
-        //addTile(LetterTileModel(sampleLetter(), this))
-    }
-
-    override fun canAccept(t: LetterTileModel): Boolean {
+    override fun canAccept(t: Ownable<LetterTileModel>): Boolean {
         return true
     }
 
-    override fun accept(tileModel: LetterTileModel) {
+    override fun accept(tileModel: Ownable<LetterTileModel>): Boolean {
         TODO("Not yet implemented")
+    }
+
+    override fun canRelease(ownable: Ownable<LetterTileModel>): Boolean {
+        return ownable in incomingTiles
+    }
+
+    override fun release(tileModel: Ownable<LetterTileModel>): Boolean {
+        return incomingTiles.remove(incomingTiles.find { e -> e == tileModel}) //TODO?
+        //TODO so there is *some* game to it
+        //addTile(LetterTileModel(sampleLetter(), this))
     }
 
     fun reset() {

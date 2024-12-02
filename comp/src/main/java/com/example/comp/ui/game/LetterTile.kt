@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.comp.dnd.DragTarget
+import com.example.comp.dnd.DraggableComposable
 import com.example.comp.model.game.LetterBoardSocketModel
 import com.example.comp.model.game.LetterTileModel
 import com.example.comp.ui.theme.game.*
@@ -20,9 +20,9 @@ val tileSize = 50
 fun LetterTile(modifier: Modifier = Modifier, model: LetterTileModel, draggable: Boolean = true) {
     // Tiles on the game board cant be moved
     if(draggable) {
-        DragTarget( //Weird naming, this is what we can drag. DropTarget on LetterSocket is what we can drag it to.
+        DraggableComposable( //Weird naming, this is what we can drag. DropTarget on LetterSocket is what we can drag it to.
             dataToDrop = model,
-            viewModel = model
+            model = model
             ) {
             Content(modifier, model = model)
         }
