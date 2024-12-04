@@ -34,7 +34,7 @@ jobs:
         gradle-version: 8.5
 
     - name: Github actions ubuntu fixup
-      run: apt update -y && apt install -y dos2unix
+      run: sudo apt update -y && sudo apt install -y dos2unix
 
     - name: Grant execute permission for gradlew
       run: dos2unix && chmod +x gradlew
