@@ -48,7 +48,7 @@ Misc TODO:
 Resulting artefacts:
 Overall the project (CI) should result in two artifacts which can be run to run the game and the game server respectively:
 - [x] The APK (TODO well its whatever I got out of the build system at this point, it's some debug apk)
-- [] The server OCI image
+- [x] The server OCI image
 
 Additional artefacts:
-- [] Screenshots and apk on pages: 
+- [x] Screenshots and apk on pages: 

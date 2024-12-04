@@ -48,11 +48,24 @@ jobs:
     - name: Generate Roborazzi screenshots
       run: ./gradlew :comp:testDebugUnitTest --tests "com.example.comp.ui.screens.MainActivityTest.captureMainScreen" --info
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: scoreserver
+        tags: score-server:latest
+        outputs: type=docker,dest=/tmp/score-server.tar
+
     - name: Add APK to pages
       run: cp comp/build/outputs/apk/debug/comp-debug.apk pages/apk/
 
     - name: Add images to pages
       run: cp comp/build/outputs/roborazzi/*.png pages/img/
+
+    - name: Add OCI image to pages
+      run: cp /tmp/score-server.tar pages/oci/score-server.tar
 
     - name: Generate image tags
       run: |
