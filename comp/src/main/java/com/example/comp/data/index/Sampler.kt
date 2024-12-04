@@ -1,6 +1,6 @@
-package com.example.comp.model.index
+package com.example.comp.data.index
 
-import com.example.comp.model.index.Distribution.sampleLetter
+import com.example.comp.data.index.Distribution.sampleLetter
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 

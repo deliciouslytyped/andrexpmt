@@ -12,29 +12,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import com.example.comp.dnd.DraggableScreen
-import com.example.comp.model.game.GameBoardModel
-import com.example.comp.model.game.IncomingStack
-import com.example.comp.model.game.LetterTileModel
-import com.example.comp.model.game.TileShelfModel
-import com.example.comp.model.index.Distribution.sampleLetter
+import com.example.comp.model.game.*
+import com.example.comp.ui.screens.GameViewModel
 
 //TODO intellij wont move this file for some reason
 //TODO on screen debug log
 @Composable
-fun DraggablePlayArea() {
-    //TODO
-    val stackModel by remember { mutableStateOf(IncomingStack()) }
-    val boardModel by remember { mutableStateOf(GameBoardModel(stack = stackModel)) }
-    val model1 by remember { mutableStateOf(TileShelfModel()) }
-    val model2 by remember { mutableStateOf(TileShelfModel()) }
-    val model3 by remember { mutableStateOf(TileShelfModel()) }
-    //val logger = LocalVisualLogger.current
-    //init game
-    LaunchedEffect(null) {
-        initNewGame(boardModel, stackModel, model1, model2, model3)
-    }
+fun DraggablePlayArea(viewModel: GameViewModel) {
+    var gm = viewModel.gm
+    //TODO for some reason putting new game in a launchedeffect(null){...} here would always trigger newgame on rotation
     DraggableScreen(modifier = Modifier.fillMaxSize()) {
-        GameOverOverlay(boardModel, stackModel, model1, model2, model3) {
+        GameOverOverlay(gm) {
             Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                 Column {
                     Column(
@@ -42,18 +30,18 @@ fun DraggablePlayArea() {
                             .fillMaxWidth()
                         //    .weight(1f)
                     ) {
-                        GameBoard(model = boardModel)
+                        GameBoard(model = gm.board)
                     }
                     Row {
-                        DraggableTileStack(stackModel = stackModel)
-                        TileShelfSet(model1, model2, model3)
+                        DraggableTileStack(stackModel = gm.newTiles)
+                        TileShelfSet(gm.shelf1, gm.shelf2, gm.shelf3)
                     }
                     LazyColumn(
                         modifier = Modifier
                             .background(Color.DarkGray)
                             .fillMaxWidth()
                     ) {
-                        boardModel.foundWords.value.words.values
+                        gm.board.foundWords.value.words.values
                             .let { HashSet(it) }
                             .forEach {
                                 item { Text(it) }
@@ -65,47 +53,17 @@ fun DraggablePlayArea() {
     }
 }
 
-fun initNewGame(
-    boardModel: GameBoardModel,
-    stackModel: IncomingStack,
-    model1: TileShelfModel,
-    model2: TileShelfModel,
-    model3: TileShelfModel
-) {
-    //TODO this is crap
-    stackModel.reset()
-    boardModel.reset()
-    model1.reset()
-    model2.reset()
-    model3.reset()
-    (0..10).map { boardModel.addRow() }
-    (0..<20).forEach {
-        stackModel.addTile(LetterTileModel(sampleLetter(), stackModel))
-    }
-    (0..<3).forEach {
-        stackModel.peek().move(model1)
-    }
-    (0..<5).forEach {
-        stackModel.peek().move(model2)
-    }
-    (0..<5).forEach {
-        stackModel.peek().move(model3)
-    }
-    boardModel.addStartingTiles()
-}
-
-
 @Composable
-fun GameOverOverlay(boardModel: GameBoardModel, stackModel: IncomingStack, model1: TileShelfModel, model2: TileShelfModel, model3: TileShelfModel, content: @Composable (() -> Unit)) {
+fun GameOverOverlay(gm: GameModel, content: @Composable (() -> Unit)) {
     Box(modifier = Modifier.fillMaxSize()) {
         content()
-        if(boardModel.gameOver.value){
+        if(gm.gameOver.value){
             Column {
                 Text(text = "Game Over :(", textAlign = TextAlign.Center)
                 Text(text = "No more reachable tiles.", textAlign = TextAlign.Center)
                 Row {
                     Button(onClick = {
-                        initNewGame(boardModel = boardModel, stackModel = stackModel, model1 = model1, model2 = model2, model3 = model3)
+                        gm.newGame()
                     }) {
                         Text(text = "New Game")
                     }
@@ -123,10 +81,4 @@ fun GameOverOverlay(boardModel: GameBoardModel, stackModel: IncomingStack, model
             }
         }
     }
-}
-
-//@Preview
-@Composable
-fun DraggablePlayAreaPreview(){
-    DraggablePlayArea()
 }

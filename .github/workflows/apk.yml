@@ -1,0 +1,69 @@
+name: Android Build
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+    - uses: actions/checkout@v4
+            
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+    
+    - name: Setup Gradle properties
+      run: |
+        mkdir -p ~/.gradle
+        cp .github/workflows/ci-gradle.properties ~/.gradle/gradle.properties
+    
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        gradle-version: 8.5
+        
+    - name: Grant execute permission for gradlew
+      run: dos2unix && chmod +x gradlew
+      
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug
+
+    - name: Generate Roborazzi screenshots
+      run: ./gradlew :comp:testDebugUnitTest --tests "com.example.comp.ui.screens.MainActivityTest.captureMainScreen" --info
+
+    - name: Add APK to pages
+      run: cp comp/build/outputs/apk/debug/comp-debug.apk pages/apk/
+
+    - name: Add images to pages
+      run: cp comp/build/outputs/roborazzi/*.png pages/img/
+
+    - name: Generate image tags
+      run: |
+        IMAGES=""
+        for img in pages/img/*; do
+          if [[ -f "$img" ]]; then
+            filename=$(basename "$img")
+            IMAGES="$IMAGES<img src='img/$filename' />\n"
+          fi
+        done
+        sed -i "s|<!--imgplaceholder-->|$IMAGES|" pages/index.html
+
+    - name: Upload Pages artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: pages
+
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4

@@ -5,14 +5,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.comp.dnd.DraggableScreen
 import com.example.comp.model.game.*
-import com.example.comp.model.index.Distribution
-import com.example.comp.model.index.WordTrie
-import com.example.comp.model.index.cartesian.longestExistingBidirectionalSubstring
+import com.example.comp.data.index.Distribution
+import com.example.comp.data.index.WordTrie
+import com.example.comp.data.index.cartesian.longestExistingBidirectionalSubstring
 import com.example.comp.ui.game.*
-import com.example.comp.ui.menus.HomeAnimationArea
-import com.example.comp.ui.menus.Navigation
+import com.example.comp.ui.screens.GameViewModel
+import com.example.comp.ui.screens.HomeAnimationArea
+import com.example.comp.ui.screens.Navigation
 import com.example.comp.ui.theme.MyApplicationTheme
 import com.example.comp.ui.util.logging.LogViewer
 import com.example.comp.ui.util.logging.LogAsEffect
@@ -110,12 +112,8 @@ fun HomeAnimationAreaPreview(){
 @Preview
 @Composable
 fun GameOverPreview(){
-    val stackModel = remember { IncomingStack() }
-    val boardModel by remember { mutableStateOf(GameBoardModel(stack = stackModel)) }
-    val model1 by remember { mutableStateOf(TileShelfModel()) }
-    val model2 by remember { mutableStateOf(TileShelfModel()) }
-    val model3 by remember { mutableStateOf(TileShelfModel()) }
-    GameOverOverlay(boardModel = boardModel, stackModel = stackModel, model1 = model1, model2 = model2, model3 = model3) {
+    val gm = remember { GameModel() }
+    GameOverOverlay(gm) {
 
     }
 }
@@ -135,11 +133,12 @@ fun VLoggerPreview() { //TODO handle lazy column
 @Preview
 @Composable
 fun MainActivityPreview() {
+    val viewModel: GameViewModel = viewModel()
     //TODO figure out dealing with landscape?
     //val act = LocalContext.current as Activity
     //act.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
     MyApplicationTheme {
-        DraggablePlayArea()
+        DraggablePlayArea(viewModel)
     }
 }
 

@@ -16,6 +16,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
+import com.example.comp.model.game.IncomingStack
+import com.example.comp.model.game.LetterTileModel
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 internal class DraggableComposableInfo {
@@ -36,7 +38,7 @@ internal val LocalDragTargetInfo = compositionLocalOf { MultiDragInfo() } //TODO
 // For example, the tile stack is not a stack of tiles, and only accounts for one drag at time.
 //TODO might as well implement a physics engine and go 3d lol....
 // Finger release order reshuffling of shelf results in changing dragged composables models as well? :P
-
+// Another bug now that drop works where the floating widget ends up in some weird staet
 
 //TODO I still dont 100% understand how this works, regarding the .invoke() and content()s probably,
 // but it seems like the way this works is that DraggableScreen is responsible for drawing the draggable area,
@@ -57,7 +59,7 @@ fun DraggableScreen(
 ) {
     val state = remember { MultiDragInfo() }
     CompositionLocalProvider(
-        LocalDragTargetInfo provides state
+        LocalDragTargetInfo provides state // Does this cause recomposition of everything?
     ) {
         Box(modifier = modifier.fillMaxSize()) {
             content()
@@ -101,11 +103,16 @@ fun <T> DraggableComposable(
         .onGloballyPositioned {
             currentPosition = it.localToWindow(Offset.Zero)
         }
-        .multiFingerDrag { pointers ->
+        .multiFingerDrag(key=dataToDrop) //TODO ehhh? hack? shouldnt this not matter because composables are created per tile/model??
+        { pointers ->
             pointers.forEach { change ->
                 // Get or create DraggableComposableInfo for this pointer
                 val dragInfo = multiDragState.activeDrags[change.id] ?: DraggableComposableInfo().also { newDragInfo ->
                     // Initialize new drag
+                    val logger = KotlinLogging.logger {  }
+                    logger.debug { "startdragging for model ${(model as LetterTileModel).label}"}
+                    logger.debug { "startdragging for model ${(model as IncomingStack).peek().label}"}
+                    logger.debug { "Creating new drag for ID ${change.id} with data: $dataToDrop" }
                     model.startDragging() //TODO we arent even using the model...
                     newDragInfo.dataToDrop = dataToDrop
                     newDragInfo.isDragging = true
@@ -122,7 +129,7 @@ fun <T> DraggableComposable(
                     // End this drag
                     model.stopDragging()
                     dragInfo.isDragging = false
-                    dragInfo.dragOffset = Offset.Zero
+                    //dragInfo.dragOffset = Offset.Zero // WHY???
                     //multiDragState.activeDrags -= change.id // Moved cleaning up finished drop to droptarget, hopefully its correct? (pointer id reuse?)
                 }
             }
@@ -147,35 +154,29 @@ fun <T> DropTarget(
         .any { dragInfo ->
             dragInfo.isDragging && myRect?.contains(dragInfo.dragPosition + dragInfo.dragOffset) ?: false
         }
-    currentDropData = ;
-    /*val activeTarget = multiDragState.activeDrags.entries
-        .firstOrNull { (_, dragInfo) ->
-            !dragInfo.isDragging && (myRect?.contains(dragInfo.dragPosition + dragInfo.dragOffset) ?: false)
-        }
-    currentDropData = if (activeTarget != null) {
-        activeTarget.let { (id, completedDrag) ->
-            logger.debug { "setting drop data ${completedDrag.dataToDrop}" }
-            val droppedData = completedDrag.dataToDrop as T?
-            // Clean up after getting the data
-            multiDragState.activeDrags -= id
-            droppedData
-        }
-    } else null*/
+
+    multiDragState.activeDrags.entries.firstOrNull {
+        (id, dragInfo) -> !dragInfo.isDragging && myRect?.contains(dragInfo.dragPosition + dragInfo.dragOffset) ?: false
+    }?.let { (id, dragInfo) ->
+        logger.debug{"droptarget ${(dragInfo.dataToDrop as LetterTileModel).label} ${id} ${dragInfo} ${dragInfo.dataToDrop}"}
+        currentDropData = dragInfo.dataToDrop as T?
+        multiDragState.activeDrags -= id
+    }
 
     Box(modifier = modifier.onGloballyPositioned {
         it.boundsInWindow().let { rect ->
             myRect = rect
         }
     }) {
-        content(isHover, currentDropData) //I dont like this approach, need to rearchitect probably
-        currentDropData = null
+        content(isHover, currentDropData)
+        currentDropData = null //I dont like this approach, need to rearchitect probably
     }
 }
 
 // sonnet
-fun Modifier.multiFingerDrag(
+fun Modifier.multiFingerDrag(key: Any?,
     onDrag: (List<PointerInputChange>) -> Unit
-) = this.pointerInput(Unit) {
+) = this.pointerInput(key) {
     awaitEachGesture {
         // Wait for first touch
         awaitFirstDown(requireUnconsumed = false)

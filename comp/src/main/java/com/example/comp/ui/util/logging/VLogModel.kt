@@ -74,8 +74,6 @@ fun LogViewer(content : @Composable (() -> Unit)){
     }
 }
 
-
-
 class LogModel() { // Do I need to make this "lifecycle aware"?
     private val buffer = LogBuffer.INSTANCE
     private val _logs = mutableStateListOf<LogEntry>()

@@ -1,4 +1,4 @@
-package com.example.comp.model.index
+package com.example.comp.data.index
 
 import android.content.Context
 import com.example.comp.R

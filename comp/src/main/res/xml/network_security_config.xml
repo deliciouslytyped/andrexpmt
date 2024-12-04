@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--https://stackoverflow.com/questions/45940861/android-8-cleartext-http-traffic-not-permitted-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

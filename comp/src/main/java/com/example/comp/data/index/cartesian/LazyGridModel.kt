@@ -1,12 +1,9 @@
 package com.example.comp.model
 
-import java.util.*
-import kotlin.math.max
-
 //TODO none of this is really lazy at this point
 
 typealias Coord = Pair<Int, Int>
-class LazyGridView<T>(val data: List<T>, val cols: Int){ // Cols is the index along the short axis
+class LazyGridModel<T>(val data: List<T>, val cols: Int){ // Cols is the index along the short axis
     // NOTE only works with full rows
     val rowCount: Int
         get() {

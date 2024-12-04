@@ -17,11 +17,16 @@ interface Ownable<T> { // TODO Should T be the base type, or Owner<T>?
     @CheckResult
     fun move(newOwner: Owner<T>): Boolean { //TODO this code is too distributed
         val logger = KotlinLogging.logger {}
-        logger.debug { "attempt move, canacept:${newOwner.canAccept(this)} ${getOwner().canRelease(this)}, owner:${getOwner()}" }
+        logger.debug { "attempt move, canacept:${newOwner.canAccept(this)} canrelease:${getOwner().canRelease(this)}, owner:${getOwner()}" }
         logger.debug { "newowner ${newOwner}" }
-        var result =  getOwner().moveTo(newOwner, this)
-        if(result) setOwner(newOwner) //TODO this is a mess
-        logger.debug { "final owner ${getOwner()} {}" }
-        return result
+
+        if(getOwner().moveTo(newOwner, this)){
+            setOwner(newOwner) //TODO this is a mess?
+            logger.debug { "final owner ${getOwner()} {}" }
+            return true
+        } else {
+            logger.debug { "final owner ${getOwner()} {}" }
+            return false
+        }
     }
 }

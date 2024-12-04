@@ -19,6 +19,7 @@ class ScoreHandler(BaseHTTPRequestHandler):
             post_data = self.rfile.read(content_length)
             data = json.loads(post_data)
 
+            print(f"Adding score submission ${data['name']} ${data['score']}")
             # Insert data into SQLite database
             conn = sqlite3.connect('scores.db')
             c = conn.cursor()
@@ -37,7 +38,10 @@ class ScoreHandler(BaseHTTPRequestHandler):
             c = conn.cursor()
             c.execute("SELECT name, score FROM scores ORDER BY score DESC")
             scores = c.fetchall()
+            scores = [{"name": s[0], "score": s[1]} for s in scores]
             conn.close()
+
+            print("Replying to score request")
 
             # Send response
             self.send_response(200)

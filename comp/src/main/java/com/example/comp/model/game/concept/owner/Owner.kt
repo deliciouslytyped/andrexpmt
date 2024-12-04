@@ -17,6 +17,9 @@ package com.example.comp.model.game.concept.owner
 // The Ownable object keeps track of its current owner as well, so that communication can happen through the ownable instead of spiderwebing around all possible owners?
 
 interface Owner<T> {
+    /*
+    Must not have sideeffects on failure.
+     */
     @Deprecated("TODO, not deprecated, but use move() on tile instead of the owners")
     fun moveTo(newOwner: Owner<T>, ownable: Ownable<T>): Boolean { //TODO synchronized or whatever? (should be doing everything on the ui thread anyway though?)
         if(newOwner.canAccept(ownable) and canRelease(ownable)){

@@ -1,11 +1,10 @@
-package com.example.comp.ui.menus
+package com.example.comp.ui.screens
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.comp.ui.game.DraggablePlayArea
 
 @Composable
 fun Navigation(){
@@ -24,7 +23,10 @@ fun Navigation(){
             HomeScreen(navController = navController)
         }
         composable(route = Screen.Game.route){
-            DraggablePlayArea()
+            GameScreen()
+        }
+        composable(route = Screen.Scores.route) {
+            ScoreScreen()
         }
     }
 }
@@ -32,4 +34,5 @@ fun Navigation(){
 open class Screen(val route: String) {
     object Home : Screen("home")
     object Game : Screen("game")
+    object Scores : Screen("scores")
 }

@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.comp.model.game.concept.owner.Ownable
 import com.example.comp.model.game.concept.owner.Owner
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 // Game board spaces that can hold a tile
 open class LetterSocketModel : ViewModel(), Owner<LetterTileModel> {
@@ -27,6 +28,9 @@ open class LetterSocketModel : ViewModel(), Owner<LetterTileModel> {
     override fun release(tileModel: Ownable<LetterTileModel>): Boolean {
         assert(tileModel == tile)
         tile = null
+
+        var logger = KotlinLogging.logger {}
+        logger.debug { "remove tilesocket: ${tileModel.self().label} $tileModel from $this" }
         return true
     }
 }

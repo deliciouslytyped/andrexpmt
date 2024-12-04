@@ -1,9 +1,9 @@
-package com.example.comp.ui.menus
+package com.example.comp.ui.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import com.example.comp.model.index.WordTrie
+import com.example.comp.data.index.WordTrie
 import com.example.comp.ui.theme.MyApplicationTheme
 import com.example.comp.ui.util.logging.LogViewer
 

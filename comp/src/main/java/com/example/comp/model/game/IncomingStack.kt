@@ -32,7 +32,7 @@ class IncomingStack : Owner<LetterTileModel>,DraggableModel() {
     }*/
 
     override fun canAccept(t: Ownable<LetterTileModel>): Boolean {
-        return true
+        return false
     }
 
     override fun accept(tileModel: Ownable<LetterTileModel>): Boolean {
@@ -40,7 +40,7 @@ class IncomingStack : Owner<LetterTileModel>,DraggableModel() {
     }
 
     override fun canRelease(ownable: Ownable<LetterTileModel>): Boolean {
-        return ownable in incomingTiles
+        return ownable.self() in incomingTiles
     }
 
     override fun release(tileModel: Ownable<LetterTileModel>): Boolean {

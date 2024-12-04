@@ -9,12 +9,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.comp.dnd.DropTarget
+import com.example.comp.dnd.LocalDragTargetInfo
 import com.example.comp.model.game.LetterBoardSocketModel
 import com.example.comp.model.game.LetterSocketModel
 import com.example.comp.model.game.LetterTileModel
@@ -25,9 +27,15 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 @Composable
 fun LetterSocket(modifier: Modifier = Modifier, model: LetterSocketModel, dropEnabled: Boolean = true) {
     val logger = KotlinLogging.logger {}
+    val multiDragState = LocalDragTargetInfo.current
+    //val activeDrags = remember { multiDragState.activeDrags } //TODO wat //TODO did this actually do anything or did i just forget it here?
+    logger.trace {"created drop target ${model} at ${(model as LetterBoardSocketModel).row}, ${(model as LetterBoardSocketModel).col}"}
     DropTarget<LetterTileModel> { isHover, tile ->
         if ( tile != null && model.tile == null && dropEnabled){
             LaunchedEffect(key1=isHover, key2 = tile) { //TODO what's correct
+                logger.debug { "ActiveDrags state changed?: ${multiDragState.activeDrags.map { (id, info) -> //TODO wat see above
+                    "$id -> ${info.dataToDrop}"
+                }}" }
                 logger.debug { "launched move ${isHover} ${tile} ${model}" }
                 tile.move(model) //TODO figure out how to IOC this or something //TODO isnt this vulnerable to races?
             }

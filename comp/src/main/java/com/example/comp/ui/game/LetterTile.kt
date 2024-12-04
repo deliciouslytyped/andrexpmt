@@ -13,12 +13,17 @@ import com.example.comp.dnd.DraggableComposable
 import com.example.comp.model.game.LetterBoardSocketModel
 import com.example.comp.model.game.LetterTileModel
 import com.example.comp.ui.theme.game.*
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 val tileSize = 50
 
 @Composable
 fun LetterTile(modifier: Modifier = Modifier, model: LetterTileModel, draggable: Boolean = true) {
+    //val content = { Content(modifier, model = model) // TODO interestingly, leads to two different behaviours if this is here or duplicated in the if branches... / completely breaks
     // Tiles on the game board cant be moved
+    val logger = KotlinLogging.logger {  }
+    logger.trace {"recomposing lettertile with $draggable ${model.label}"}
+
     if(draggable) {
         DraggableComposable( //Weird naming, this is what we can drag. DropTarget on LetterSocket is what we can drag it to.
             dataToDrop = model,

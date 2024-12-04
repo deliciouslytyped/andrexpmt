@@ -2,31 +2,38 @@ package com.example.comp.model.game
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Rect
-import androidx.lifecycle.ViewModel
 import com.example.comp.model.Coord
-import com.example.comp.model.LazyGridView
-import com.example.comp.model.index.Distribution.sampleLetter
-import com.example.comp.model.index.WordTrie
-import com.example.comp.model.index.cartesian.OrientedSpan
-import com.example.comp.model.index.cartesian.Span
-import com.example.comp.model.index.cartesian.findLongestWords
+import com.example.comp.model.LazyGridModel
+import com.example.comp.data.index.Distribution.sampleLetter
+import com.example.comp.data.index.FoundWords
+import com.example.comp.data.index.WordRect
+import com.example.comp.data.index.WordTrie
+import com.example.comp.data.index.cartesian.OrientedSpan
+import com.example.comp.data.index.cartesian.Span
+import com.example.comp.data.index.cartesian.findLongestWords
+import com.example.comp.data.index.collectRuns
 import java.util.*
-import kotlin.collections.HashSet
 import kotlin.math.absoluteValue
 
 //TODO word finding logic needs to be rewritten
 //TODO handle stacks
 //cols is the size orthogonal to the long axis
-class GameBoardModel(val cols: Int = 8, val stack: IncomingStack) {
+//TODO really would preffer the tile placed callback to be a construction parameter...?
+class GameBoardModel(val cols: Int = 8, val stack: IncomingStack) { // TODO inifinite game board ....
     var sockets = mutableStateListOf<LetterBoardSocketModel>()
-    val gv = LazyGridView(sockets, cols) //TODO mutablestate? shouldnt need it because its derived from one?
+    val gv = LazyGridModel(sockets, cols) //TODO mutablestate? shouldnt need it because its derived from one?
 
-    var turnCounter = mutableStateOf(0)
     var burnFrontier = mutableStateOf(0)
-    var gameOver = mutableStateOf(false)
 
+    var numRows = 0; //Just for debugging right now
 
     val burnRate = 3
+
+    private var tilePlacedCallback: (() -> Unit)? = null
+
+    fun setTilePlacedCallback(cb: () -> Unit) {
+        tilePlacedCallback = cb
+    }
 
     //Indexed by (didnt profile, premature optimization) bounding box to attempt to decrease number of steps needed to search/draw / have an interface  for it
     //TODO change the types or something NOTE the protocol on the rects is tha they contian r,c,w,h not ltrb
@@ -40,36 +47,20 @@ class GameBoardModel(val cols: Int = 8, val stack: IncomingStack) {
     }
 
     fun addRow(){
-        sockets.addAll((0..<cols).map { _ ->
-            val s = LetterBoardSocketModel(this)
+        sockets.addAll((0..<cols).map { col ->
+            val s = LetterBoardSocketModel(this, numRows, col)
             if( Random().nextDouble() <= 3f/64f) {
                 s.label = "+${6 + Random().nextInt().absoluteValue % 8}"
             }
             s
         }) //TODO snapshot based?
+        numRows += 1
 
     }
 
-    fun turnLogic(){
-        turnCounter.value++
-        if(turnCounter.value % burnRate == 0){
-            addRow()
-            burnTiles() // TODO need because of drag and drop
-            val isGameOver = checkGameOver()
-            if (isGameOver) {
-                gameOver.value = true
-            }
-            burnFrontier.value++
-        }
-    }
 
-    // Game over if no more reachable active tiles
-    fun checkGameOver(): Boolean {
-        return !((burnFrontier.value)..<gv.rowCount) //TODO why didnt this crash when it was just ..
-            .any { gv.getRow(it).any { it.tile?.isConnected?.value == true } }
-    }
 
-    private fun burnTiles() {
+    fun burnTiles() {
         gv.getRow(burnFrontier.value).forEach { it.burned.value = true }
     }
 
@@ -79,7 +70,8 @@ class GameBoardModel(val cols: Int = 8, val stack: IncomingStack) {
         newlyActiveSockets.forEach {
             activatePower(it)
         }
-        turnLogic()
+        //TODO hackish
+        tilePlacedCallback?.invoke()
 
         findWordsWith(sm)
     }
@@ -143,7 +135,7 @@ class GameBoardModel(val cols: Int = 8, val stack: IncomingStack) {
     }
 
     //TODO jfc
-    fun getAxis(sm: LetterSocketModel, axis: Char, receiver: ((LazyGridView<LetterBoardSocketModel>) -> List<Pair<Int,List<LetterSocketModel>>>)): Map<Coord, OrientedSpan>{
+    fun getAxis(sm: LetterSocketModel, axis: Char, receiver: ((LazyGridModel<LetterBoardSocketModel>) -> List<Pair<Int,List<LetterSocketModel>>>)): Map<Coord, OrientedSpan>{
         return with(gv, receiver).map { (ax, ts) ->
             ts
                 // TODO so now that we have a notion of activation/connectivity, things get more complicated, because things may be come more connected over time and this isnt visible in the first iteration...
@@ -171,88 +163,9 @@ class GameBoardModel(val cols: Int = 8, val stack: IncomingStack) {
 
     fun reset() {
         sockets.clear()
-        turnCounter.value = 0
         burnFrontier.value = 0
-        gameOver.value = false
         val f = foundWords.value
         f.clear()
         foundWords.value = f
-    }
-}
-
-fun <T> List<T>.collectRuns(p: ((T) -> Boolean)): List<Pair<Int, List<T>>> {
-    return this.foldIndexed(mutableListOf<Pair<Int,MutableList<T>>>()) { i, acc, t ->
-        if(p(t)) {
-            if(acc.isEmpty()){
-                acc.add(Pair(i,mutableListOf(t)))
-            } else {
-                acc.last().second.add(t)
-            }
-        } else if (acc.isNotEmpty() && acc.last().second.isNotEmpty()) {
-            acc.add(Pair(i, mutableListOf()))
-        }
-        acc
-    }.dropLastWhile { it.second.isEmpty() } //TODO not sure how to do it without possibly leaving an extra list at the end
-}
-
-class FoundWords { //TODO test this
-    var leftEndIndex = WordEndRangeIndex() //TODO
-    var rightEndIndex = WordEndRangeIndex() //TODO
-    var words = mutableStateMapOf<WordRect, String>()
-
-    //TODO the search algorithm is probably doing a lot of extra work with nonincremental searches and readding everything
-    fun add(r: WordRect, s: String){
-        leftEndIndex.add(r.left.toInt(), r)
-        rightEndIndex.add(r.right.toInt(), r)
-        words.put(r, s)
-    }
-
-    fun clear(){
-        words.clear()
-        leftEndIndex.clear()
-        rightEndIndex.clear()
-    }
-    fun getInRange(start: Int, end: Int): List<WordRect> {
-        //TODO mutableSetOf?
-        //TODO this looks pretty heavy
-        return HashSet(leftEndIndex.getInRange(start, end))
-            .union(HashSet(rightEndIndex.getInRange(start, end)))
-            .toList()
-    }
-}
-
-// We implement this to provide some amount of encapsulation for the mutablestate we have to handle manually here
-typealias FoundKey = Int
-typealias FoundValue = WordRect
-typealias FoundWordIndex = TreeMap<FoundKey, HashSet<FoundValue>>
-typealias WordRect = Rect //TODO
-class WordEndRangeIndex {
-    private var foundWords = mutableStateOf(FoundWordIndex()) //We have to use a hacky update function to make sure this works
-
-    fun add(endIndex: FoundKey, value: FoundValue) { //TODO inefficient
-        val item = foundWords.value[endIndex]
-        if (item != null){
-            item.add(value)
-        } else {
-            val newItem = HashSet<FoundValue>()
-            newItem.add(value)
-            foundWords.value[endIndex] = newItem
-        }
-        foundWords.value = TreeMap(foundWords.value)
-    }
-
-    fun clear(){
-        val f = foundWords.value
-        f.clear()
-        foundWords.value = f
-    }
-
-    //TODO can I somehow return some read only object?
-    fun read(): FoundWordIndex {
-        return foundWords.value
-    }
-
-    fun getInRange(start: Int, end: Int): Set<WordRect> {
-        return read().subMap(start, true, end, true).values.toList().flatten().toSet() //TODO eh
     }
 }

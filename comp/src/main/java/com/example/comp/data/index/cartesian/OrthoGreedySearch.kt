@@ -1,10 +1,7 @@
-package com.example.comp.model.index.cartesian
+package com.example.comp.data.index.cartesian
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.comp.model.Coord
-import com.example.comp.model.index.TrieCursor
-import com.example.comp.model.index.WordTrie
+import com.example.comp.data.index.TrieCursor
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
@@ -43,7 +40,7 @@ fun longestExistingSubstring(s: String): Span? {
             //logger.info("$c")
             //log("${cursor.valid}")
             cursor[c] //TODO make sure we arent off by one on the depth on this
-            logger.info { "$c ${cursor.valid}" }
+            //logger.info { "$c ${cursor.valid}" }
             //Not sure what I was thinking here but this whole thing is a mess
             if (!cursor.valid && c != '.') { // If we cant pac-man any more characters, check if we can find a terminator and then we've found the longest match for this starter, otherwise we wont find any more for this starter
                                             //i.e. if we cant consume the current character (And the cursor thus didnt step down the tree),

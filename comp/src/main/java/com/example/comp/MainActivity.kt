@@ -5,7 +5,7 @@ package com.example.comp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.example.comp.ui.menus.MainScreen
+import com.example.comp.ui.screens.MainScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint //TODO do I actually need this here?
