@@ -1,6 +1,7 @@
 package com.example.comp.data.index
 
 import com.example.comp.data.index.Distribution.sampleLetter
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 
@@ -25,7 +26,7 @@ fun oldSampleLetter(): String{
 }
 
 //TODO too sleep deprived to check if this works
-object Distribution {
+object Distribution_old {
     val cumulativeFrequencies = mutableListOf<Pair<Char, Double>>()
     var currentSum = 0.0
 
@@ -57,6 +58,88 @@ object Distribution {
     fun sampleLetter(): String {
         val randomValue = Random.nextDouble(currentSum)
         return cumulativeFrequencies.first { it.second >= randomValue }.first.uppercase()
+    }
+
+
+}
+
+// TODO From sonnet, again too tired to think of something
+//TODO probably need a rolling window for the actual set because averages will desensitize it over time
+object Distribution {
+    val logger = KotlinLogging.logger {}
+    private val vowels = setOf('A', 'E', 'I', 'O', 'U')
+    private val targetRatio = 2.5  // We want 2.5 consonants for every vowel
+
+    // Keep track of what we've drawn
+    private var vowelCount = 0
+    private var consonantCount = 0
+
+    // Calculate the current consonant-to-vowel ratio
+    private fun getCurrentRatio(): Double {
+        // Avoid division by zero by pretending we start with one vowel
+        return consonantCount.toDouble() / (vowelCount.coerceAtLeast(1)).toDouble()
+    }
+
+    // Calculate how much we should adjust probabilities
+    private fun calculateCompensationFactor(): Double {
+        val currentRatio = getCurrentRatio()
+        // How far are we from our target ratio? Negative means too many consonants
+        val deviation = targetRatio - currentRatio
+
+        // Use exponential function to create stronger correction as we get further from target
+        // Math.E is approximately 2.718
+        return Math.pow(Math.E/2, -deviation)
+    }
+
+    fun sampleLetter(): String {
+        val compensationFactor = calculateCompensationFactor()
+
+        // Adjust the distribution based on our compensation factor
+        val adjustedDistribution = Distribution_old.scrabbleTileDistribution.mapValues { (letter, freq) ->
+            if (letter in vowels) {
+                // If we need more vowels (ratio too high), compensation will be > 1
+                freq * compensationFactor
+            } else {
+                // If we need more consonants (ratio too low), compensation will be < 1
+                // which makes vowels less likely and consonants relatively more likely
+                freq.toDouble()
+            }
+        }
+
+        // Sample using our adjusted distribution
+        val totalWeight = adjustedDistribution.values.sum()
+        val randomValue = Random.nextDouble() * totalWeight
+        var currentSum = 0.0
+
+        for ((letter, weight) in adjustedDistribution) {
+            currentSum += weight
+            if (currentSum >= randomValue) {
+                // Update our counts
+                if (letter in vowels) {
+                    vowelCount++
+                } else {
+                    consonantCount++
+                }
+                logger.debug {getStats()}
+                return letter.toString()
+            }
+        }
+
+        // Fallback (shouldn't normally reach here)
+        consonantCount++  // Since E is a vowel
+        logger.debug {getStats()}
+        return "E"
+    }
+
+    // Helpful for debugging and monitoring
+    fun getStats(): String {
+        return """
+            Vowels: $vowelCount
+            Consonants: $consonantCount
+            Current Ratio: ${String.format("%.2f", getCurrentRatio())}
+            Target Ratio: $targetRatio
+            Compensation Factor: ${String.format("%.2f", calculateCompensationFactor())}
+        """.trimIndent()
     }
 }
 

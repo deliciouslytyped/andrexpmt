@@ -66,7 +66,7 @@ fun TileShelf(modifier: Modifier = Modifier, model: TileShelfModel) {
                 sorted.map { (model, idx) ->
                     //TODO this will accidentally squeeze tiles, make sure its not a problem
                     Spacer(modifier = Modifier.width(spacings[idx].dp))
-                    logger.debug { "adding tile to shelf ${model.label}" }
+                    logger.trace { "adding tile to shelf ${model.label}" }
                     LetterTile(
                         model = model
                     )
